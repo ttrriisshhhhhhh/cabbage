@@ -1,6 +1,8 @@
 import pathlib
 import tensorflow as tf
 import cv2
+import numpy as np
+from matplotlib import pyplot as plt
 
 DATADIR = pathlib.Path("cabbage/data/dataset")
 LABELS = ["has", "none"]
@@ -13,11 +15,38 @@ image_count = len(list(DATADIR.glob('*/*.jpg')))
 
 dim = (IMG_SIZE, IMG_SIZE)
 
-for i in range(1):
-	resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-	cv2.imshow("Resized image", resized)
-	print('Resized Dimensions : ',resized.shape)
-	print(i)
+def resizing():
+	for i in range(1):
+		resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+		cv2.imshow("Resized image", resized)
+		print('Resized Dimensions : ',resized.shape)
+		print(i)
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+	cv2.waitKey(0)
+	cv2.destroyAllWindows()
+
+def noise_red():
+	print('noise')
+	img = cv2.imread('cabbage/data/dataset/has/IMG_3690.jpg')
+
+	dst = cv2.fastNlMeansDenoisingColored(img,None,10,10,7,21)
+
+	plt.subplot(121),plt.imshow(img)
+	plt.subplot(122),plt.imshow(dst)
+	plt.show()
+
+def edge_detect():
+	print('edge')
+	img = cv2.imread('cabbage/data/dataset/has/IMG_3690.jpg',0)
+	edges = cv2.Canny(img,100,200)
+
+	plt.subplot(121),plt.imshow(img, cmap = 'gray')
+	plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+	plt.subplot(122),plt.imshow(edges,cmap = 'gray')
+	plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
+
+	plt.show()
+
+resizing()
+noise_red()
+edge_detect()
