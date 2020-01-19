@@ -16,18 +16,19 @@ image_count = len(list(DATADIR.glob('*/*.jpg')))
 dim = (IMG_SIZE, IMG_SIZE)
 
 def resizing():
-	for i in range(1):
-		resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-		cv2.imshow("Resized image", resized)
-		print('Resized Dimensions : ',resized.shape)
-		print(i)
+	resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+	cv2.imshow("Resized image", resized)
+	print('Resized Dimensions : ',resized.shape)
 
+	#print(str(resized))
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
 
+	return resized
+
 def noise_red():
 	print('noise')
-	img = cv2.imread('cabbage/data/dataset/has/IMG_3690.jpg')
+	img = resizing()
 
 	dst = cv2.fastNlMeansDenoisingColored(img,None,10,10,7,21)
 
@@ -35,9 +36,12 @@ def noise_red():
 	plt.subplot(122),plt.imshow(dst)
 	plt.show()
 
+	return dst
+
 def edge_detect():
 	print('edge')
-	img = cv2.imread('cabbage/data/dataset/has/IMG_3690.jpg',0)
+	img = noise_red()
+	
 	edges = cv2.Canny(img,100,200)
 
 	plt.subplot(121),plt.imshow(img, cmap = 'gray')
@@ -47,6 +51,4 @@ def edge_detect():
 
 	plt.show()
 
-resizing()
-noise_red()
 edge_detect()
