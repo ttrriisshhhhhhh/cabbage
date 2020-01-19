@@ -10,6 +10,7 @@ numpy = "*"
 opencv = "*"
 matplotlib = "*"
 opencv-python = "*"
+tensorflow = "*"
 
 [requires]
 python_version = "3.7"
