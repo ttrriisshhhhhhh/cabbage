@@ -1,6 +1,7 @@
 import pathlib
 import tensorflow as tf
 import cv2
+import os
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -11,7 +12,7 @@ BATCH_SIZE = 32
 
 img = cv2.imread('cabbage/data/dataset/has/IMG_3690.jpg', cv2.IMREAD_UNCHANGED)
 
-image_count = len(list(DATADIR.glob('*/*.jpg')))
+#image_count = len(list(DATADIR.glob('*/*.jpg')))
 
 dim = (IMG_SIZE, IMG_SIZE)
 
@@ -52,3 +53,10 @@ def edge_detect():
 	plt.show()
 
 edge_detect()
+
+# source_dir = pathlib.Path('cabbage/data/original')
+# files = list(source_dir.glob('*/*.jpg'))
+# print(len(files))
+# print(os.getcwd())
+# for file in files:
+# 	print(file)

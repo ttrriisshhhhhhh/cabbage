@@ -3,7 +3,6 @@ import numpy as np
 from sklearn import svm, metrics, datasets
 from sklearn.utils import Bunch
 from sklearn.model_selection import GridSearchCV, train_test_split
-
 from skimage.io import imread
 from skimage.transform import resize
 

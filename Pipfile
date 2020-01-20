@@ -12,6 +12,7 @@ matplotlib = "*"
 opencv-python = "*"
 tensorflow = "*"
 scikit-learn = "*"
+sklearn = "*"
 
 [requires]
 python_version = "3.7"
