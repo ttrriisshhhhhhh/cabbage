@@ -7,14 +7,16 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 DATADIR = pathlib.Path("cabbage/data")
-#files = DATADIR.glob("/.jpg")
+# files = DATADIR.glob("/.jpg")
+
 
 def preprocess():
-	cabbage_img = list(DATADIR.glob('original/*.jpg'))
-	print('pre')
-	for image_path in cabbage_img[:3]:
-	    print('GUMANA')
-	    display.display(Image.open(str(image_path)))
+    cabbage_img = list(DATADIR.glob("original/*.jpg"))
+    print("pre")
+    for image_path in cabbage_img[:3]:
+        print("GUMANA")
+        display.display(Image.open(str(image_path)))
+
 
 preprocess()
 
@@ -23,7 +25,7 @@ preprocess()
 
 # img = cv2.imread('cabbage/data/dataset/has/IMG_3690.jpg', cv2.IMREAD_UNCHANGED)
 
-#image_count = len(list(DATADIR.glob('*/*.jpg')))
+# image_count = len(list(DATADIR.glob('*/*.jpg')))
 
 # def preprocess():
 # 	print('pre')
