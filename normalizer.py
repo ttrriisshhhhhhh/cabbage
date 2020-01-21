@@ -29,7 +29,7 @@ def resizing():
     return resized
 
 
-def noise_red():
+def noise_reduce():
     print("noise")
     img = resizing()
 
