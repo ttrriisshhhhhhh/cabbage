@@ -5,21 +5,33 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 
-DATADIR = pathlib.Path("cabbage/data/dataset")
-LABELS = ["has", "none"]
-IMG_SIZE = 500
-BATCH_SIZE = 32
+#DATADIR = pathlib.Path("cabbage/data/dataset")
+#LABELS = ["has", "none"]
+#BATCH_SIZE = 32
 
-img = cv2.imread("cabbage/data/dataset/has/IMG_3690.jpg", cv2.IMREAD_UNCHANGED)
+#img = cv2.imread("data/original/has/IMG_3690.jpg")
 
-image_count = len(list(DATADIR.glob("*/*.jpg")))
+#image_count = len(list(DATADIR.glob("/.jpg")))
 
-dim = (IMG_SIZE, IMG_SIZE)
+#print(img)
 
+dim = (500, 500)
 
-def resizing():
-    resized = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
-    cv2.imshow("Resized image", resized)
+def noise_red(image_file):
+    print("noise")
+    #converted = cv2.cvtColor(image_file, cv2.COLOR_GRAY2BGR)
+
+    dst = cv2.fastNlMeansDenoisingColored(image_file, None, 10, 10, 7, 21)
+
+    # plt.subplot(121), plt.imshow(img)
+    # plt.subplot(122), plt.imshow(dst)
+    # plt.show()
+
+    return dst
+
+def resizing(image_file):
+    resized = cv2.resize(image_file, dim, interpolation=cv2.INTER_AREA)
+    # cv2.imshow("Resized image", resized)
     print("Resized Dimensions : ", resized.shape)
 
     # print(str(resized))
@@ -28,32 +40,14 @@ def resizing():
 
     return resized
 
-
-def noise_reduce():
-    print("noise")
-    img = resizing()
-
-    dst = cv2.fastNlMeansDenoisingColored(img, None, 10, 10, 7, 21)
-
-    plt.subplot(121), plt.imshow(img)
-    plt.subplot(122), plt.imshow(dst)
-    plt.show()
-
-    return dst
-
-
-def edge_detect():
+def edge_detect(image_file):
     print("edge")
-    img = noise_red()
 
-    edges = cv2.Canny(img, 100, 200)
+    edges = cv2.Canny(img, 200, 500)
 
-    plt.subplot(121), plt.imshow(img, cmap="gray")
-    plt.title("Original Image"), plt.xticks([]), plt.yticks([])
-    plt.subplot(122), plt.imshow(edges, cmap="gray")
-    plt.title("Edge Image"), plt.xticks([]), plt.yticks([])
+    # plt.subplot(121), plt.imshow(img, cmap="gray")
+    # plt.title("Original Image"), plt.xticks([]), plt.yticks([])
+    # plt.subplot(122), plt.imshow(edges, cmap="gray")
+    # plt.title("Edge Image"), plt.xticks([]), plt.yticks([])
 
-    plt.show()
-
-
-edge_detect()
+    # plt.show()

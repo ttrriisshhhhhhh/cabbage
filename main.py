@@ -6,63 +6,89 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 import shutil
-import normalizer
+from normalizer import noise_red, resizing, edge_detect
 
 DATADIR = pathlib.Path("cabbage/data")
 # files = DATADIR.glob("/.jpg")
 
-def preprocess():
-	print('start')
+meron = os.listdir('data/original/has/')
+wala = os.listdir('data/original/none')
 
-	normalizer.edge_detect()
+for i in meron:
+    print(i)
+    img = cv2.imread(f'data/original/has/{i}')
 
-	datasource_dir = pathlib.Path("cabbage/data/original")
-	dataset_dir = pathlib.Path("cabbage/data/resized")
-	
-	# empty dataset dir
-	print('empty')
-	if dataset_dir.exists():
-	    shutil.rmtree(dataset_dir)
-	os.mkdir(dataset_dir)
+    reduced = noise_red(img)
+    resized = resizing(reduced)
+    edged = edge_detect(resized)
 
-	# create labels folder
-	print('labels')
-	for label in list(datasource_dir.glob("*")):
-	    os.mkdir(dataset_dir/label.name)
+    resized_has_dir = 'data/resized/has'
 
-	for file in list(datasource_dir.glob("*/*.jpg")):
-	    img = cv.imread(str(file))
-	    #img = cv.resize(img, (500, 500), interpolation = cv.INTER_AREA)
-	    
-	    label = file.parts[-2]
-	    name = file.name
-	    dest = dataset_dir/label/name
-	    cv.imwrite(str(dest), img)
+    cv2.imwrite(os.path.join(resized_has_dir, i), edged)
 
-	    print('done')
+# for i in wala:
+#     reduced = noise_red(i)
+#     resized = resizing(reduced)
+#     edged = edge_detect(resized)
 
-    cabbage_img = list(DATADIR.glob("original/*.jpg"))
-    print("pre")
-    for image_path in cabbage_img[:3]:
-        print("GUMANA")
-        display.display(Image.open(str(image_path)))
+#     resized_none_dir = pathlib.Path("cabbage/data/resized/none")
 
-preprocess()
+    
+
+# reduced = noise_red(img)
+# resized = resizing(reduced)
+# edged = edge_detect(resized)
+
+# def preprocess():
+#   print('start')
+
+#   datasource_dir = pathlib.Path("cabbage/data/original")
+#   dataset_dir = pathlib.Path("cabbage/data/resized")
+    
+#   # empty dataset dir
+#   print('empty')
+#   if dataset_dir.exists():
+#       shutil.rmtree(dataset_dir)
+#   os.mkdir(dataset_dir)
+
+#   # create labels folder
+#   print('labels')
+#   for label in list(datasource_dir.glob("*")):
+#       os.mkdir(dataset_dir/label.name)
+
+#   for file in list(datasource_dir.glob("/.jpg")):
+#       img = cv.imread(str(file))
+#       #img = cv.resize(img, (500, 500), interpolation = cv.INTER_AREA)
+        
+#       label = file.parts[-2]
+#       name = file.name
+#       dest = dataset_dir/label/name
+#       cv.imwrite(str(dest), img)
+
+#       print('done')
+
+#     cabbage_img = list(DATADIR.glob("original/*.jpg"))
+#     print("pre")
+#     for image_path in cabbage_img[:3]:
+#         print("GUMANA")
+#         display.display(Image.open(str(image_path)))
+
+# preprocess()
 
 # IMG_SIZE = 500
 # BATCH_SIZE = 32
 
 # img = cv2.imread('cabbage/data/dataset/has/IMG_3690.jpg', cv2.IMREAD_UNCHANGED)
 
-# image_count = len(list(DATADIR.glob('*/*.jpg')))
+# image_count = len(list(DATADIR.glob('/.jpg')))
 
 # def preprocess():
-# 	print('pre')
-# 	path = glob.glob("cabbage/data/*.jpg")
-# 	cv2_img = []
-# 	for i in path[:3]:
-# 		print(i)
-# 		n = cv2.imread(i)
-# 		cv2_img.append(n)
+#   print('pre')
+#   path = glob.glob("cabbage/data/*.jpg")
+#   cv2_img = []
+#   for i in path[:3]:
+#       print(i)
+#       n = cv2.imread(i)
+#       cv2_img.append(n)
 
 # preprocess()
