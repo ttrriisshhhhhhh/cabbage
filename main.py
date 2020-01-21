@@ -8,21 +8,8 @@ from matplotlib import pyplot as plt
 import shutil
 import normalizer
 
-#DATADIR = pathlib.Path("cabbage/data")
-#files = DATADIR.glob("/.jpg")
-
-# def preprocess():
-# 	cabbage_img = list(DATADIR/"original".glob('*/*.jpg'))
-# 	print('pre')
-# 	print(cabbage_img)
-# 	for image_path in cabbage_img[:3]:
-# 	    print('GUMANA')
-# 	    display.display(Image.open(str(image_path)))
-
-# preprocess()
- 
-
-
+DATADIR = pathlib.Path("cabbage/data")
+# files = DATADIR.glob("/.jpg")
 
 def preprocess():
 	print('start')
@@ -54,6 +41,12 @@ def preprocess():
 
 	    print('done')
 
+    cabbage_img = list(DATADIR.glob("original/*.jpg"))
+    print("pre")
+    for image_path in cabbage_img[:3]:
+        print("GUMANA")
+        display.display(Image.open(str(image_path)))
+
 preprocess()
 
 # IMG_SIZE = 500
@@ -61,7 +54,7 @@ preprocess()
 
 # img = cv2.imread('cabbage/data/dataset/has/IMG_3690.jpg', cv2.IMREAD_UNCHANGED)
 
-#image_count = len(list(DATADIR.glob('*/*.jpg')))
+# image_count = len(list(DATADIR.glob('*/*.jpg')))
 
 # def preprocess():
 # 	print('pre')
