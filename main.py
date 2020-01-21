@@ -12,19 +12,45 @@ DATADIR = pathlib.Path("cabbage/data")
 # files = DATADIR.glob("/.jpg")
 
 meron = os.listdir('data/original/has/')
-wala = os.listdir('data/original/none')
+wala = os.listdir('data/original/none/')
 
-for i in meron:
-    print(i)
-    img = cv2.imread(f'data/original/has/{i}')
+# print(meron)
+# print(wala)
+
+# img = cv2.imread('data/original/has/IMG_3690.jpg')
+
+# reduced = noise_red(img)
+# resized = resizing(reduced)
+# edges = edge_detect(resized)
+
+
+# for i in meron:
+    
+#     img = cv2.imread(f'data/original/has/{i}')
+
+#     reduced = noise_red(img)
+#     resized = resizing(reduced)
+#     edges = edge_detect(resized)
+
+#     print(edges)
+
+#     resized_has_dir = 'data/resized/has/'
+
+#     cv2.imwrite(os.path.join(resized_has_dir, f'cb_{i}.jpg'), edges)
+
+for j in wala:
+    
+    img = cv2.imread(f'data/original/none/{j}')
 
     reduced = noise_red(img)
     resized = resizing(reduced)
-    edged = edge_detect(resized)
+    edges = edge_detect(resized)
 
-    resized_has_dir = 'data/resized/has'
+    print(edges)
 
-    cv2.imwrite(os.path.join(resized_has_dir, i), edged)
+    resized_none_dir = 'data/resized/none/'
+
+    cv2.imwrite(os.path.join(resized_none_dir, f'cb_{j}.jpg'), edges)
 
 # for i in wala:
 #     reduced = noise_red(i)

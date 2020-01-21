@@ -27,6 +27,8 @@ def noise_red(image_file):
     # plt.subplot(122), plt.imshow(dst)
     # plt.show()
 
+    print('noise done')
+
     return dst
 
 def resizing(image_file):
@@ -35,15 +37,19 @@ def resizing(image_file):
     print("Resized Dimensions : ", resized.shape)
 
     # print(str(resized))
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
+    print('resize done')
 
     return resized
 
 def edge_detect(image_file):
     print("edge")
 
-    edges = cv2.Canny(img, 200, 500)
+    # print(image_file)
+
+    edges = cv2.Canny(image_file, 100, 200)
 
     # plt.subplot(121), plt.imshow(img, cmap="gray")
     # plt.title("Original Image"), plt.xticks([]), plt.yticks([])
@@ -51,3 +57,7 @@ def edge_detect(image_file):
     # plt.title("Edge Image"), plt.xticks([]), plt.yticks([])
 
     # plt.show()
+
+    # print('edge done')
+
+    return edges
