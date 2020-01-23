@@ -41,11 +41,11 @@ def preprocess():
 
 	    print('done')
 
-    cabbage_img = list(DATADIR.glob("original/*.jpg"))
-    print("pre")
-    for image_path in cabbage_img[:3]:
-        print("GUMANA")
-        display.display(Image.open(str(image_path)))
+	cabbage_img = list(DATADIR.glob("original/*.jpg"))
+	print("pre")
+	for image_path in cabbage_img[:3]:
+		print("GUMANA")
+		display.display(Image.open(str(image_path)))
 
 preprocess()
 

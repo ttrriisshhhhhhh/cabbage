@@ -44,7 +44,7 @@ def noise_reduce():
 
 def edge_detect():
     print("edge")
-    img = noise_red()
+    img = noise_reduce()
 
     edges = cv2.Canny(img, 100, 200)
 

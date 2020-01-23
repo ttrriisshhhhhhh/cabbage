@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 def feature_mapping():
 	# Importing of CSV file
-	data = np.genfromtxt("dummy_data.csv", names=True,
+	data = np.genfromtxt("cabbage/ldi/algo/knn/dummy_data.csv", names=True,
 						dtype="float", delimiter=",")
 	
 
