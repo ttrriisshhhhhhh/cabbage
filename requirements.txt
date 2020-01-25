@@ -1,0 +1,12 @@
+numpy==1.18.1
+pandas==0.25.3
+matplotlib==3.1.2
+opencv-pyth==4.1.2.30
+ipython==7.11.1
+scikit-lea==0.22.1
+torch==1.2.0
+torchvision==0.4.0
+scikit-ima==0.16.1
+pillow==7.0.0
+tqdm==4.42.0
+black==19.10b0
