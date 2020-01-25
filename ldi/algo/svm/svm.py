@@ -32,7 +32,7 @@ def load_image_files(container_path, dimension=(64, 64)):
                  images=images,
                  DESCR=descr)
 
-image_dataset = load_image_files("cabbage/data/dataset")
+image_dataset = load_image_files("cabbage/data/original")
 
 X_train, X_test, y_train, y_test = train_test_split(
     image_dataset.data, image_dataset.target, test_size=0.3,random_state=109)
