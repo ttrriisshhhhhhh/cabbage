@@ -1,1 +1,4 @@
 .DS_STORE
+*.JPG
+Pipfile
+Pipfile.lock
