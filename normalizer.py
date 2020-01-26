@@ -13,6 +13,7 @@ from PIL import Image
 #LABELS = ["has", "none"]
 #BATCH_SIZE = 32
 
+<<<<<<< HEAD
 
 img = cv2.imread('data/original/has/IMG_3699.jpg')
 # img = cv2.imread("C:/Users/ACER/Downloads/sample.jpg")
@@ -129,6 +130,7 @@ def cluster(image_file):
     # show the image
     plt.imshow(masked_image)
     plt.show()
+
 
 def threshold(image_file):  
 
