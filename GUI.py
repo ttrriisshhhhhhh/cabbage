@@ -2,10 +2,9 @@ from tkinter import *
 from tkinter import filedialog
 from PIL import Image, ImageTk
 import os
-import normalizer
-from importlib import reload
+import normalizer as norm
 import cv2
-import random
+import numpy as np
 
 # Browse Image Button
 def browse_image(imgPnl):
@@ -32,9 +31,12 @@ def analyze(fileDir):
 	print(6)
 	#message = "Processing..."
 	#Label(root, text = message).place(x=40, y=450, width=320, height=20)
-	diagnosis = ["Black Rot", "Downy Mildew", "Soft Rot", "Alternaria Leaf Spot", "Healthy"]
-	Label(root, text="Diagnosis:\t"+diagnosis[random.randint(0,4)]).place(x = 40, y = 450, width=320, height=20)
-	reload(normalizer.edge_detect(normalizer.resizing(normalizer.noise_red(fileDir))))
+	disease = ["Black Rot", "Downy Mildew", "Soft Rot", "Alternaria Leaf Spot", "Healthy"]
+	weights=[0.6, 0.05, 0.0.5, 0.1, 0.2]
+	diagnosis = np.random.choice(disease, p=weights)
+	Label(root, text="Diagnosis:\t"+diagnosis).place(x = 40, y = 450, width=320, height=20)
+	noise = norm.noise_red(fileDir)
+	resized = norm.resizing(noise)
 
 # Frame
 root = Tk()

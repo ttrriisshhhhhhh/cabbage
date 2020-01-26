@@ -13,8 +13,6 @@ from PIL import Image
 #LABELS = ["has", "none"]
 #BATCH_SIZE = 32
 
-<<<<<<< HEAD
-
 img = cv2.imread('data/original/has/IMG_3699.jpg')
 # img = cv2.imread("C:/Users/ACER/Downloads/sample.jpg")
 
@@ -30,9 +28,9 @@ def noise_red(image_file):
 
     dst = cv2.fastNlMeansDenoisingColored(image_file, None, 12, 12, 7, 21)
 
-    plt.subplot(121), plt.imshow(image_file)
-    plt.subplot(122), plt.imshow(dst)
-    plt.show()
+    # plt.subplot(121), plt.imshow(image_file)
+    # plt.subplot(122), plt.imshow(dst)
+    # plt.show()
 
     print('noise done')
 
@@ -40,12 +38,12 @@ def noise_red(image_file):
 
 def resizing(image_file):
     resized = cv2.resize(image_file, dim, interpolation=cv2.INTER_AREA)
-    cv2.imshow("Resized image", resized)
+    #cv2.imshow("Resized image", resized)
     print("Resized Dimensions : ", resized.shape)
 
     # print(str(resized))
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
 
     print('resize done')
 
