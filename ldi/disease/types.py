@@ -23,6 +23,4 @@ class Disease:
         self.classes.remove(name)
 
     def __list__(self):
-        from pprint import pprint
-        pprint(self.classes)
         return self.classes
