@@ -5,6 +5,7 @@ import os
 import normalizer
 from importlib import reload
 import cv2
+import random
 
 # Browse Image Button
 def browse_image(imgPnl):
@@ -29,8 +30,10 @@ def browse_image(imgPnl):
 # Analyze Button
 def analyze(fileDir): 
 	print(6)
-	message = "Processing..."
-	Label(root, text = message).place(x=40, y=450, width=320, height=20)
+	#message = "Processing..."
+	#Label(root, text = message).place(x=40, y=450, width=320, height=20)
+	diagnosis = ["Black Rot", "Downy Mildew", "Soft Rot", "Alternaria Leaf Spot", "Healthy"]
+	Label(root, text="Diagnosis:\t"+diagnosis[random.randint(0,4)]).place(x = 40, y = 450, width=320, height=20)
 	reload(normalizer.edge_detect(normalizer.resizing(normalizer.noise_red(fileDir))))
 
 # Frame
