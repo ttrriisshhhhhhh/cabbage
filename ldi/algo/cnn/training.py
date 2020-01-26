@@ -11,22 +11,46 @@ import logging
 import torch.optim as opt
 import torch.nn as nets
 
+from matplotlib import pyplot as plt
+
+from .cnn import CabbageNet
+from ..disease.types import Disease
+
 logger = logging.getLogger(__name__)
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+
+# following function (plot_with_labels) is for visualization, can be
+# ignored if not interested
+from matplotlib import cm
+try:
+    from sklearn.manifold import TSNE
+    HAS_SK = True
+except:
+    HAS_SK = False
+    print('Please install sklearn for layer visualization')
+
+
+def plot_with_labels(lowDWeights, labels):
+    plt.cla()
+    X, Y = lowDWeights[:, 0], lowDWeights[:, 1]
+    for x, y, s in zip(X, Y, labels):
+        c = cm.rainbow(int(255 * s / 9))
+        plt.text(x, y, s, backgroundcolor=c, fontsize=9)
+    plt.xlim(X.min(), X.max())
+    plt.ylim(Y.min(), Y.max())
+    plt.title('Visualize last layer')
+    plt.show()
+    plt.pause(0.01)
+
+plt.ion()
 
 
 def net_train(train_data, learning_rate=0.001,
-              optimizer="Adam",
               criterion=nets.CrossEntropyLoss()
               ):
     """ For training the ConvNet """
 
-    training_cost = []
-    training_accuracy = []
-    batch_size = 10
-    training_epochs = 10
-    batch_count = len(train_data) // batch_size
-
-    print(f"Size of training data: {train_data.size}")
-    print(f"Batch size is: {batch_size}")
-    print(f"Total number of batches: {batch_count}")
-    print(f"\nEpochs: {training_epochs}")
+    classes = Disease()
+    cab_net = CabbageNet(len(classess.__list__())).to(device)
+    optimizer = opt.Adam(cab_net.parameters(), lr=learning_rate)
