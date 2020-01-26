@@ -24,19 +24,19 @@ wala = os.listdir('data/original/none/')
 # edges = edge_detect(resized)
 
 
-# for i in meron:
+for i in meron:
     
-#     img = cv2.imread(f'data/original/has/{i}')
+    img = cv2.imread(f'data/original/has/{i}')
 
-#     reduced = noise_red(img)
-#     resized = resizing(reduced)
-#     edges = edge_detect(resized)
+    reduced = noise_red(img)
+    resized = resizing(reduced)
+    edges = edge_detect(resized)
 
-#     print(edges)
+    print(edges)
 
-#     resized_has_dir = 'data/resized/has/'
+    resized_has_dir = 'data/resized/has/'
 
-#     cv2.imwrite(os.path.join(resized_has_dir, f'cb_{i}.jpg'), edges)
+    cv2.imwrite(os.path.join(resized_has_dir, f'cb_{i}.jpg'), edges)
 
 for j in wala:
     

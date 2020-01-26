@@ -6,12 +6,16 @@ import numpy as np
 from matplotlib import pyplot as plt
 from skimage.filters import sobel
 from skimage.color import label2rgb
+from scipy import signal
+from PIL import Image
 
 #DATADIR = pathlib.Path("cabbage/data/dataset")
 #LABELS = ["has", "none"]
 #BATCH_SIZE = 32
 
-#img = cv2.imread("data/original/has/IMG_3690.jpg")
+
+img = cv2.imread('data/original/has/IMG_3699.jpg')
+# img = cv2.imread("C:/Users/ACER/Downloads/sample.jpg")
 
 #image_count = len(list(DATADIR.glob("/.jpg")))
 
@@ -23,11 +27,11 @@ def noise_red(image_file):
     print("noise")
     #converted = cv2.cvtColor(image_file, cv2.COLOR_GRAY2BGR)
 
-    dst = cv2.fastNlMeansDenoisingColored(image_file, None, 10, 10, 7, 21)
+    dst = cv2.fastNlMeansDenoisingColored(image_file, None, 12, 12, 7, 21)
 
-    # plt.subplot(121), plt.imshow(img)
-    # plt.subplot(122), plt.imshow(dst)
-    # plt.show()
+    plt.subplot(121), plt.imshow(image_file)
+    plt.subplot(122), plt.imshow(dst)
+    plt.show()
 
     print('noise done')
 
@@ -35,185 +39,215 @@ def noise_red(image_file):
 
 def resizing(image_file):
     resized = cv2.resize(image_file, dim, interpolation=cv2.INTER_AREA)
-    # cv2.imshow("Resized image", resized)
+    cv2.imshow("Resized image", resized)
     print("Resized Dimensions : ", resized.shape)
 
     # print(str(resized))
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     print('resize done')
 
     return resized
 
-def edge_detect(image_file):
-    print("edge")
+# def edge_detect(image_file):
+#     print("edge")
 
-    # print(image_file)
+#     # print(image_file)
 
-    edges = cv2.Canny(image_file, 100, 200)
+#     edges = cv2.Canny(image_file, 500, 200)
 
-    # plt.subplot(121), plt.imshow(img, cmap="gray")
-    # plt.title("Original Image"), plt.xticks([]), plt.yticks([])
-    # plt.subplot(122), plt.imshow(edges, cmap="gray")
-    # plt.title("Edge Image"), plt.xticks([]), plt.yticks([])
+#     plt.subplot(121), plt.imshow(img, cmap="gray")
+#     plt.title("Original Image"), plt.xticks([]), plt.yticks([])
+#     plt.subplot(122), plt.imshow(edges, cmap="gray")
+#     plt.title("Edge Image"), plt.xticks([]), plt.yticks([])
+
+#     plt.show()
+
+#     print('edge done')
+
+#     return edges
+
+def graying(image_file):
+
+    gray = cv2.cvtColor(image_file, cv2.COLOR_BGR2GRAY)
+
+    # cv2.imshow('Original image',image_file)
+    cv2.imshow('Gray image', gray)
+
+    print('grayscale done')
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    return gray
+
+def cluster(image_file):
+
+    image_file = cv2.imread('data/original/has/IMG_3699.jpg')
+
+    image = cv2.cvtColor(image_file, cv2.COLOR_BGR2RGB)
+
+    # reshape the image to a 2D array of pixels and 3 color values (RGB)
+    pixel_values = image.reshape((-1, 3))
+    # convert to float
+    pixel_values = np.float32(pixel_values)
+
+    print(pixel_values.shape)
+
+    # define stopping criteria
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.2)
+
+    # number of clusters (K)
+    k = 4
+    _, labels, (centers) = cv2.kmeans(pixel_values, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+
+    # convert back to 8 bit values
+    centers = np.uint8(centers)
+
+    # flatten the labels array
+    labels = labels.flatten()
+
+    # convert all pixels to the color of the centroids
+    segmented_image = centers[labels.flatten()]
+
+    # reshape back to the original image dimension
+    segmented_image = segmented_image.reshape(image.shape)
+    # show the image
+    plt.imshow(segmented_image)
+    plt.show()
+
+    # disable only the cluster number 2 (turn the pixel into black)
+    masked_image = np.copy(image)
+    # convert to the shape of a vector of pixel values
+    masked_image = masked_image.reshape((-1, 3))
+    # color (i.e cluster) to disable
+    cluster = 1
+    masked_image[labels == cluster] = [0, 0, 0]
+    # convert back to original shape
+    masked_image = masked_image.reshape(image.shape)
+    # show the image
+    plt.imshow(masked_image)
+    plt.show()
+
+def threshold(image_file):  
+
+    th = cv2.adaptiveThreshold(image_file, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 199, 5)
+    cv2.imshow('original',image_file)
+    cv2.imshow('Adaptive threshold',th)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    return th
+
+    # img = cv2.imread(image_file,0)
+    # ret,thresh1 = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
+    # ret,thresh2 = cv2.threshold(img,127,255,cv2.THRESH_BINARY_INV)
+    # ret,thresh3 = cv2.threshold(img,127,255,cv2.THRESH_TRUNC)
+    # ret,thresh4 = cv2.threshold(img,127,255,cv2.THRESH_TOZERO)
+    # ret,thresh5 = cv2.threshold(img,127,255,cv2.THRESH_TOZERO_INV)
+
+    # titles = ['Original Image','BINARY','BINARY_INV','TRUNC','TOZERO','TOZERO_INV']
+    # images = [img, thresh1, thresh2, thresh3, thresh4, thresh5]
+
+    # plt.imshow()
 
     # plt.show()
 
-    # print('edge done')
+def con_stretch(image_file):
+    print('contrast stretching')
+    # Read the image
+    # print(str(image_file))
 
-    return edges
+    # img1 = cv2.imread(image_file)
 
-def back_remove():
-    ### PARAMETERS ###
-    BLUR = 21
-    CANNY_THRESH_1 = 200
-    CANNY_THRESH_2 = 200
-    MASK_DILATE_ITER = 10
-    MASK_ERODE_ITER = 10
-    MASK_COLOR = (0.0,0.0,1.0) # In BGR format
+    # print(str(img1))
+ 
+    # Create zeros array to store the stretched image
+    minmax_img = np.zeros((image_file.shape[0], image_file.shape[1]), dtype = 'uint8')
+     
+    # Loop over the image and apply Min-Max formulae
+    for i in range(image_file.shape[0]):
+        for j in range(image_file.shape[1]):
+            minmax_img[i,j] = 255*(image_file[i,j]-np.min(image_file))/(np.max(image_file)-np.min(image_file))
+ 
+    # Display the stretched image
+    cv2.imshow('Minmax',minmax_img)
 
-    img = cv2.imread('data/original/has/IMG_3699.jpg')
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
-    edges = cv2.Canny(gray, CANNY_THRESH_1, CANNY_THRESH_2)
-    edges = cv2.dilate(edges, None)
-    edges = cv2.erode(edges, None)
+    return minmax_img
 
-    contour_info = []
-    contours, _ = cv2.findContours(edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
-    # Previously, for a previous version of cv2, this line was: 
-    #  contours, _ = cv2.findContours(edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
-    # Thanks to notes from commenters, I've updated the code but left this note
-    for c in contours:
-        contour_info.append((
-            c,
-            cv2.isContourConvex(c),
-            cv2.contourArea(c),
-        ))
-    contour_info = sorted(contour_info, key=lambda c: c[2], reverse=True)
-    max_contour = contour_info[0]
+def back_remove(image_file):
 
-    #-- Create empty mask, draw filled polygon on it corresponding to largest contour ----
-    # Mask is black, polygon is white
-    mask = np.zeros(edges.shape)
-    cv2.fillConvexPoly(mask, max_contour[0], (255))
+    # image_file = cv2.imread('data/original/has/IMG_3699.jpg')
+ 
+    gray_img = cv2.cvtColor(image_file, cv2.COLOR_BGR2GRAY)
 
-    #-- Smooth mask, then blur it --------------------------------------------------------
-    mask = cv2.dilate(mask, None, iterations=MASK_DILATE_ITER)
-    mask = cv2.erode(mask, None, iterations=MASK_ERODE_ITER)
-    mask = cv2.GaussianBlur(mask, (BLUR, BLUR), 0)
-    mask_stack = np.dstack([mask]*3)    # Create 3-channel alpha mask
+    _, thresh = cv2.threshold(gray_img, 127, 255, cv2.ADAPTIVE_THRESH_MEAN_C + cv2.THRESH_BINARY)
 
-    #-- Blend masked img into MASK_COLOR background --------------------------------------
-    mask_stack  = mask_stack.astype('float32') / 255.0          # Use float matrices, 
-    img         = img.astype('float32') / 255.0                 #  for easy blending
+    img_contours = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
 
-    masked = (mask_stack * img) + ((1-mask_stack) * MASK_COLOR) # Blend
-    masked = (masked * 255).astype('uint8')                     # Convert back to 8-bit 
+    img_contours = sorted(img_contours, key=cv2.contourArea)
+ 
+    for i in img_contours:
+        if cv2.contourArea(i) > 100:
+            break
 
-    cv2.imshow('img', masked)                                   # Display
-    cv2.waitKey()
+    mask = np.zeros(image_file.shape[:2], np.uint8)
 
-    #cv2.imwrite('C:/Temp/person-masked.jpg', masked)           # Save
+    cv2.drawContours(mask, [i],-1, 255, -1)
 
-    # split image into channels
-    c_red, c_green, c_blue = cv2.split(img)
+    new_img = cv2.bitwise_and(image_file, image_file, mask=mask)
 
-    # merge with mask got on one of a previous steps
-    img_a = cv2.merge((c_red, c_green, c_blue, mask.astype('float32') / 255.0))
+    cv2.imshow("Original Image", image_file)
 
-    # show on screen (optional in jupiter)
-    #matplotlib inline
-    plt.imshow(img_a)
-    plt.show()
+    cv2.imshow("Image with background removed", new_img)
+ 
+    cv2.waitKey(0)
 
-    # save to disk
-    #cv2.imwrite('girl_1.png', img_a*255)
-
-    # or the same using plt
-    #plt.imsave('girl_2.png', img_a)
-
-#back_remove()
-
-# def remove_back():
-#     import numpy as np
-#     from scipy import signal
-#     from PIL import Image
+    return new_img
 
 
-#     def load_image(path):
-#         return np.asarray(Image.open(path))/255.0
-
-#     def save(path, img):
-#         tmp = np.asarray(img*255.0, dtype=np.uint8)
-#         Image.fromarray(tmp).save(path)
-
-#     def denoise_image(inp):
-#         # estimate 'background' color by a median filter
-#         bg = signal.medfilt2d(inp, 11)
-#         #save('background.png', bg)
-
-#         # compute 'foreground' mask as anything that is significantly darker than
-#         # the background
-#         mask = inp < bg - 0.1
-#         #save('foreground_mask.png', mask)
-
-#         # return the input value for all pixels in the mask or pure white otherwise
-#         return np.where(mask, inp, 1.0)
 
 
-#     inp_path = 'data/original/has/IMG_3699.jpg'
-#     out_path = 'output.png'
+    # img = np.asarray(Image.open(image_file))/255.0
 
-#     inp = load_image(inp_path)
-#     out = denoise_image(inp)
+    # tmp = np.asarray(img*255.0, dtype=np.uint8)
+    # Image.fromarray(tmp).save(path)
 
-#     imshow(out)
 
-# remove_back()
+    # # estimate 'background' color by a median filter
+    # bg = signal.medfilt2d(inp, 11)
+    # save('background.png', bg)
 
-def segment():
+    # # compute 'foreground' mask as anything that is significantly darker than
+    # # the background
+    # mask = inp < bg - 0.1
+    # save('foreground_mask.png', mask)
 
-    elevation_map = sobel(coins)
+    # # return the input value for all pixels in the mask or pure white otherwise
+    # return np.where(mask, inp, 1.0)
 
-    fig, ax = plt.subplots(figsize=(4, 3))
-    ax.imshow(elevation_map, cmap=plt.cm.gray)
-    ax.set_title('elevation map')
-    ax.axis('off')
+    # inp_path = '../input/train/2.png'
+    # out_path = 'output.png'
 
-    markers = np.zeros_like(coins)
-    markers[coins < 30] = 1
-    markers[coins > 150] = 2
+    # inp = load_image(inp_path)
+    # out = denoise_image(inp)
 
-    fig, ax = plt.subplots(figsize=(4, 3))
-    ax.imshow(markers, cmap=plt.cm.nipy_spectral)
-    ax.set_title('markers')
-    ax.axis('off')
+    # # save(out_path, out)
 
-    segmentation = morphology.watershed(elevation_map, markers)
+    # return out
 
-    fig, ax = plt.subplots(figsize=(4, 3))
-    ax.imshow(segmentation, cmap=plt.cm.gray)
-    ax.set_title('segmentation')
-    ax.axis('off')
+# reduced = noise_red(img)
+# segmented = cluster(reduced)
+resized = resizing(img)
+# grayed = graying(resized)
+# thresh = threshold(grayed)
+# stretched = con_stretch(thresh)
+# edged = edge_detect(thresh)
+# final = back_remove(stretched)
 
-    
-
-    segmentation = ndi.binary_fill_holes(segmentation - 1)
-    labeled_coins, _ = ndi.label(segmentation)
-    image_label_overlay = label2rgb(labeled_coins, image=coins)
-
-    fig, axes = plt.subplots(1, 2, figsize=(8, 3), sharey=True)
-    axes[0].imshow(coins, cmap=plt.cm.gray)
-    axes[0].contour(segmentation, [0.5], linewidths=1.2, colors='y')
-    axes[1].imshow(image_label_overlay)
-
-    for a in axes:
-        a.axis('off')
-
-    plt.tight_layout()
-
-    plt.show()
-
-segment()
+removed = back_remove(resized)
