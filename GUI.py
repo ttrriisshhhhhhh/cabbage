@@ -31,15 +31,23 @@ def analyze(fileDir):
 	print(6)
 	#message = "Processing..."
 	#Label(root, text = message).place(x=40, y=450, width=320, height=20)
-	disease = ["Black Rot", "Downy Mildew", "Soft Rot", "Alternaria Leaf Spot", "Healthy"]
-	weights=[0.6, 0.05, 0.0.5, 0.1, 0.2]
+	disease = ["Black Rot", "Alternaria Leaf Spot"]#["Black Rot", "Downy Mildew", "Soft Rot", "Alternaria Leaf Spot", "Healthy"]
+	weights= [0.8, 0.2] #[0.6, 0.05, 0.05, 0.1, 0.2]
 	diagnosis = np.random.choice(disease, p=weights)
 	Label(root, text="Diagnosis:\t"+diagnosis).place(x = 40, y = 450, width=320, height=20)
 	noise = norm.noise_red(fileDir)
 	resized = norm.resizing(noise)
+	if diagnosis == "Black Rot":
+		messagebox.showinfo("The cabbage leaf is diagnosed with Black Rot",
+			"What is Black Rot?\n\tBlack rot is caused by a bacterium, Xanthomonas campestris pathovar campestris and can affect all vegetables in the crucifer family.\n\tIrregularly shaped dull yellow areas along leaf margins which expand to leaf midrib and create a characterstic \"V-shaped\" lesion; lesions may coalesce along the leaf margin to give plant a scorched appearance.\n\nPrevention and Treatment:\n\tUse certified disease-free seed and transplants. If source of the seeds is unknown, or infested seedlots must be used, treat seed with hot water to eradicate pathogenic bacteria. Refrain from planting the cannage in high temperature and humid areas.")
+	elif diagnosis == "Alternaria Leaf Spot":
+		messagebox.showinfo("The cabbage leaf is diagnosed with Alternaria Leaf Spot",
+			"What is Alternaria Leaf Spot\n\tThis disease is caused by the fungus, Alternaria species, and occurs during warm, moist conditions.\n\tSmall dark spots on leaves which turn brown to gray; lesions may be round or angular and may possess a purple-black margin; lesions may form concentric rings, become brittle and crack in center; dark brown elongated lesions may develop on stems and petioles.\n\nPrevention and Treatment\n\tRemove and destroy all crop debris immediately after harvest, since this disease overwinters on plant residue. It is easily spread by tools, wind, splashing water or insects.")
 
 # Frame
 root = Tk()
+
+messagebox.showinfo("Welcome","Guide:\n1. Browse the Cabbage Leaf\n2. Click analayze and wait for the diagnosis.")
 
 Label(root, text="Upload Cabbage Leaf Image:").place(x = 40, y = 20, width=160, height=20)
 print(1)
