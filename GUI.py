@@ -32,7 +32,7 @@ class CabbageApp(tk.Tk):
 			frame = F(container, self)
 
 			self.frames[F] = frame
-
+			
 			frame.grid(row=0, column=0, sticky="nsew")
 
 		self.show_frame(StartPage)
@@ -73,10 +73,9 @@ class PageOne(tk.Frame):
 		imgPnl.image = img_icon
 
 		fileName = os.path.basename(fileDir)
-		lblFilename.configure(text="File Name:"+fileName)
+		lblFilename.configure(text="File Name:\t"+fileName)
 
 		btnAnalyze.configure(command= lambda: self.analyze(cv2.imread(fileDir), lblDiagnosis))
-
 
 	def analyze(self, fileDir, lblDiagnosis): 
 		print("analyzing")
@@ -90,12 +89,47 @@ class PageOne(tk.Frame):
 		
 		noise = norm.noise_red(fileDir)
 		resized = norm.resizing(noise)
+		top = Toplevel()
+
+		screen_width = top.winfo_screenwidth()
+		screen_height = top.winfo_screenheight()
+		abscissa = (screen_width/2) - (width_frame/2)
+		ordinate = (screen_height/2) - (height_frame/2)
+		top.geometry("%dx%d+%d+%d" % (width_frame, height_frame, abscissa, ordinate))
+		top.resizable(width=False, height=False)
+
+
+		canvas = tk.Canvas(top, width=400, height=550)
+		canvas.place(x=0, y=0)
+		canvas.bg_img=ImageTk.PhotoImage(Image.open("background.jpg"))
+
+		canvas.create_image(0,0, image=canvas.bg_img, anchor="nw")
+
+		mDiag = tk.Label(canvas, text="")
+		mDiag.place(x = 40, y = 40, width=320, height=420)
+
+		btnBack = tk.Button(canvas, text="Back", command = top.destroy)
+		btnBack.place(x=120, y=475, width =160, height=40)
+
 		if diagnosis == "Black Rot":
-			messagebox.showinfo("The cabbage leaf is diagnosed with Black Rot",
-				"What is Black Rot?\n\tBlack rot is caused by a bacterium, Xanthomonas campestris pathovar campestris and can affect all vegetables in the crucifer family.\n\tIrregularly shaped dull yellow areas along leaf margins which expand to leaf midrib and create a characterstic \"V-shaped\" lesion; lesions may coalesce along the leaf margin to give plant a scorched appearance.\n\nPrevention and Treatment:\n\tUse certified disease-free seed and transplants. If source of the seeds is unknown, or infested seedlots must be used, treat seed with hot water to eradicate pathogenic bacteria. Refrain from planting the cannage in high temperature and humid areas.")
+			br = Image.open("black_rot.png")
+			br.thumbnail((320, 420), Image.ANTIALIAS)
+			blrot = ImageTk.PhotoImage(br)
+
+			mDiag.configure(image=blrot, text="black")
+
+			mDiag.image = blrot
+			print("Black Rot")
+			
 		elif diagnosis == "Alternaria Leaf Spot":
-			messagebox.showinfo("The cabbage leaf is diagnosed with Alternaria Leaf Spot",
-				"What is Alternaria Leaf Spot\n\tThis disease is caused by the fungus, Alternaria species, and occurs during warm, moist conditions.\n\tSmall dark spots on leaves which turn brown to gray; lesions may be round or angular and may possess a purple-black margin; lesions may form concentric rings, become brittle and crack in center; dark brown elongated lesions may develop on stems and petioles.\n\nPrevention and Treatment\n\tRemove and destroy all crop debris immediately after harvest, since this disease overwinters on plant residue. It is easily spread by tools, wind, splashing water or insects.")
+			al = Image.open("alternaria.png")
+			al.thumbnail((320, 420), Image.ANTIALIAS)
+			als = ImageTk.PhotoImage(al)
+
+			mDiag.configure(image=als, text="alter")
+
+			mDiag.image = als
+			print("Alternaria Leaf Spot")
 
 
 	def __init__(self, parent, controller):
@@ -135,8 +169,8 @@ class PageOne(tk.Frame):
 		lblDiagnosis = tk.Label(canvas, text="Diagnosis:")
 		lblDiagnosis.place(x = 40, y = 450, width=320, height=20)
 
-
 app = CabbageApp()
+
 width_frame = 400
 height_frame = 550
 screen_width = app.winfo_screenwidth()
