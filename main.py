@@ -1,120 +1,251 @@
-import pathlib
-import tensorflow as tf
 import cv2
-import glob
-import os
-import numpy as np
-from matplotlib import pyplot as plt
-import shutil
-from normalizer import noise_red, resizing, edge_detect
+import numpy as np           
+import argparse, sys, os
 
-DATADIR = pathlib.Path("cabbage/data")
-# files = DATADIR.glob("/.jpg")
+def endprogram():
+    print ("\nProgram terminated!")
+    sys.exit()
 
-meron = os.listdir('data/original/has/')
-wala = os.listdir('data/original/none/')
+#Reading the image by parsing the argument 
+# text = str(ImageFile)
+# print ("\n*********************\nImage : " + ImageFile + "\n*********************")
+# img = cv2.imread(text)
 
-# print(meron)
-# print(wala)
+img = cv2.imread('C:\\Users\\ACER\\Desktop\\has\\IMG_3708.jpg')
 
-# img = cv2.imread('data/original/has/IMG_3690.jpg')
+img = cv2.resize(img ,((int)(img.shape[1]/5),(int)(img.shape[0]/5)))
+original = img.copy()
+neworiginal = img.copy() 
+# cv2.imshow('original',img)
 
-# reduced = noise_red(img)
-# resized = resizing(reduced)
-# edges = edge_detect(resized)
+#Calculating number of pixels with shade of white(p) to check if exclusion of these pixels is required or not (if 
+#more than a fixed %) in order to differentiate the white background or white patches in image caused by flash, if present.
 
+p = 0 
+for i in range(img.shape[0]):
+    for j in range(img.shape[1]):
+        B = img[i][j][0]
+        G = img[i][j][1]
+        R = img[i][j][2]
+        if (B > 110 and G > 110 and R > 110):
+            p += 1
+            
+#finding the % of pixels in shade of white
+totalpixels = img.shape[0]*img.shape[1]
+per_white = 100 * p/totalpixels
+'''
+print 'percantage of white: ' + str(per_white) + '\n'
+print 'total: ' + str(totalpixels) + '\n'
+print 'white: ' + str(p) + '\n'
+'''
+#excluding all the pixels with colour close to white if they are more than 10% in the image
+if per_white > 10:
+    img[i][j] = [200,200,200]
+    # cv2.imshow('color change', img)
 
-for i in meron:
-    
-    img = cv2.imread(f'data/original/has/{i}')
+#Guassian blur
+blur1 = cv2.GaussianBlur(img,(3,3),1)
 
-    reduced = noise_red(img)
-    resized = resizing(reduced)
-    edges = edge_detect(resized)
+#mean-shift algo
+newimg = np.zeros((img.shape[0], img.shape[1],3),np.uint8)
+criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER , 10 ,1.0)
 
-    print(edges)
+img = cv2.pyrMeanShiftFiltering(blur1, 20, 30, newimg, 0, criteria)
+# cv2.imshow('means shift image',img)
 
-    resized_has_dir = 'data/resized/has/'
+#Guassian blur
+blur = cv2.GaussianBlur(img,(11,11),1)
 
-    cv2.imwrite(os.path.join(resized_has_dir, f'cb_{i}.jpg'), edges)
+#Canny-edge detection
+canny = cv2.Canny(blur, 160, 290)
 
-for j in wala:
-    
-    img = cv2.imread(f'data/original/none/{j}')
+canny = cv2.cvtColor(canny,cv2.COLOR_GRAY2BGR)
+#creating border around image to close any open curve cut by the image border 
+#bordered = cv2.copyMakeBorder(canny,10,10,10,10, cv2.BORDER_CONSTANT, (255,255,255))       #function not working(not making white coloured border) 
+#bordered = cv2.rectangle(canny,(-2,-2),(275,183),(255,255,255),3)
+#cv2.imshow('Canny on meanshift bordered image',bordered)
 
-    reduced = noise_red(img)
-    resized = resizing(reduced)
-    edges = edge_detect(resized)
+#contour to find leafs
+bordered = cv2.cvtColor(canny,cv2.COLOR_BGR2GRAY)
+contours,hierarchy = cv2.findContours(bordered, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
-    print(edges)
+maxC = 0
+for x in range(len(contours)):                                                  #if take max or one less than max then will not work in
+    if len(contours[x]) > maxC:                                                 # pictures with zoomed leaf images
+        maxC = len(contours[x])
+        maxid = x
 
-    resized_none_dir = 'data/resized/none/'
+perimeter = cv2.arcLength(contours[maxid],True)
+#print perimeter
+Tarea = cv2.contourArea(contours[maxid])
+cv2.drawContours(neworiginal,contours[maxid],-1,(0,0,255))
+# cv2.imshow('Contour',neworiginal)
+#cv2.imwrite('Contour complete leaf.jpg',neworiginal)
 
-    cv2.imwrite(os.path.join(resized_none_dir, f'cb_{j}.jpg'), edges)
+#Creating rectangular roi around contour
+height, width, _ = canny.shape
+min_x, min_y = width, height
+max_x = max_y = 0
+frame = canny.copy()
 
-# for i in wala:
-#     reduced = noise_red(i)
-#     resized = resizing(reduced)
-#     edged = edge_detect(resized)
-
-#     resized_none_dir = pathlib.Path("cabbage/data/resized/none")
-
-    
-
-# reduced = noise_red(img)
-# resized = resizing(reduced)
-# edged = edge_detect(resized)
-
-# def preprocess():
-#   print('start')
-
-#   datasource_dir = pathlib.Path("cabbage/data/original")
-#   dataset_dir = pathlib.Path("cabbage/data/resized")
-    
-#   # empty dataset dir
-#   print('empty')
-#   if dataset_dir.exists():
-#       shutil.rmtree(dataset_dir)
-#   os.mkdir(dataset_dir)
-
-#   # create labels folder
-#   print('labels')
-#   for label in list(datasource_dir.glob("*")):
-#       os.mkdir(dataset_dir/label.name)
-
-#   for file in list(datasource_dir.glob("/.jpg")):
-#       img = cv.imread(str(file))
-#       #img = cv.resize(img, (500, 500), interpolation = cv.INTER_AREA)
+# computes the bounding box for the contour, and draws it on the frame,
+for contour, hier in zip(contours, hierarchy):
+    (x,y,w,h) = cv2.boundingRect(contours[maxid])
+    min_x, max_x = min(x, min_x), max(x+w, max_x)
+    min_y, max_y = min(y, min_y), max(y+h, max_y)
+    if w > 80 and h > 80:
+        #cv2.rectangle(frame, (x,y), (x+w,y+h), (255, 0, 0), 2)   #we do not draw the rectangle as it interferes with contour later on
+        roi = img[y:y+h , x:x+w]
+        originalroi = original[y:y+h , x:x+w]
         
-#       label = file.parts[-2]
-#       name = file.name
-#       dest = dataset_dir/label/name
-#       cv.imwrite(str(dest), img)
+if (max_x - min_x > 0 and max_y - min_y > 0):
+    roi = img[min_y:max_y , min_x:max_x]    
+    originalroi = original[min_y:max_y , min_x:max_x]
+    #cv2.rectangle(frame, (min_x, min_y), (max_x, max_y), (255, 0, 0), 2)   #we do not draw the rectangle as it interferes with contour
 
-#       print('done')
+# cv2.imshow('ROI', frame)
+# cv2.imshow('rectangle ROI', roi)
+img = roi
 
-#     cabbage_img = list(DATADIR.glob("original/*.jpg"))
-#     print("pre")
-#     for image_path in cabbage_img[:3]:
-#         print("GUMANA")
-#         display.display(Image.open(str(image_path)))
+#Changing colour-space
+#imghsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+imghls = cv2.cvtColor(roi, cv2.COLOR_BGR2HLS)
+# cv2.imshow('HLS', imghls)
+imghls[np.where((imghls==[30,200,2]).all(axis=2))] = [0,200,0]
+# cv2.imshow('new HLS', imghls)
 
-# preprocess()
+#Only hue channel
+huehls = imghls[:,:,0]
+# cv2.imshow('img_hue hls',huehls)
+#ret, huehls = cv2.threshold(huehls,2,255,cv2.THRESH_BINARY)
 
-# IMG_SIZE = 500
-# BATCH_SIZE = 32
+huehls[np.where(huehls==[0])] = [35]
+# cv2.imshow('img_hue with my mask',huehls)
 
-# img = cv2.imread('cabbage/data/dataset/has/IMG_3690.jpg', cv2.IMREAD_UNCHANGED)
+#Thresholding on hue image
+ret, thresh = cv2.threshold(huehls,28,255,cv2.THRESH_BINARY_INV)
+# cv2.imshow('thresh', thresh)
 
-# image_count = len(list(DATADIR.glob('/.jpg')))
+#Masking thresholded image from original image
+mask = cv2.bitwise_and(originalroi,originalroi,mask = thresh)
+# cv2.imshow('masked out img',mask)
 
-# def preprocess():
-#   print('pre')
-#   path = glob.glob("cabbage/data/*.jpg")
-#   cv2_img = []
-#   for i in path[:3]:
-#       print(i)
-#       n = cv2.imread(i)
-#       cv2_img.append(n)
+#Finding contours for all infected regions
+contours,heirarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
-# preprocess()
+Infarea = 0
+for x in range(len(contours)):
+    cv2.drawContours(originalroi,contours[x],-1,(0,0,255))
+    # cv2.imshow('Contour masked',originalroi)
+    
+    #Calculating area of infected region
+    Infarea += cv2.contourArea(contours[x])
+
+if Infarea > Tarea:
+    Tarea = img.shape[0]*img.shape[1]
+
+print ('_________________________________________\n Perimeter: %.2f' %(perimeter) 
+       + '\n_________________________________________')
+
+print ('_________________________________________\n Total area: %.2f' %(Tarea) 
+       + '\n_________________________________________')
+
+#Finding the percentage of infection in the leaf
+print ('_________________________________________\n Infected area: %.2f' %(Infarea) 
+       + '\n_________________________________________')
+
+try:
+    per = 100 * Infarea/Tarea
+except ZeroDivisionError:
+    per = 0
+
+print ('_________________________________________\n Percentage of infection region: %.2f' %(per) 
+       + '\n_________________________________________')
+
+
+print("\n*To terminate press and hold (q)*")
+
+cv2.imshow('orig',original)
+# cv2.waitKey(0)
+
+"""****************************************update dataset*******************************************"""
+#Updating a dataset file to maintain log of the leaf images identified. 
+
+print("\nDo you want to run the classifier(Y/N):")
+n = cv2.waitKey(0) & 0xFF
+
+if n == ord('q' or 'Q'):
+    endprogram()
+
+#import csv file library 
+import csv
+
+filename = 'data_unlabelled.csv' 
+
+while True: 
+    if  n == ord('y'or'Y'):
+        
+        fieldnames = ['fortnum', 'imgid', 'feature1', 'feature2', 'feature3']
+        
+        
+        print ('Appending to ' + str(filename)+ '...')
+        
+        print ('\nFile ' + str(filename)+ ' updated!' )
+        
+        try:
+            results = []
+            with open(filename) as File:
+                reader = csv.DictReader(File)
+                for rows in reader:
+                    results.append(rows)
+            try:
+                #first character(fortnum) of previously appended line 
+                preflod = int(results[len(results)-1]['fortnum'])           
+            #if new file            
+            except IndexError:
+                preflod = -1
+            
+            if preflod < 9:
+                fortnum = preflod + 1
+            elif preflod > 9:
+                fortnum = 0
+            file.close(File)
+            
+            L = {'fortnum': str(fortnum), 'imgid': args["input"], 'feature1': str(Tarea), 'feature2': str(Infarea), 'feature3': str(perimeter)} 
+            
+            with open(filename,'a') as File:
+                
+                writer = csv.DictWriter(File, fieldnames = fieldnames)
+                
+                writer.writerow(L)
+
+                file.close(File)
+            
+        except IOError:
+            # os.system('mkdir datasetlog')
+            fortnum = 0
+            L = {'fortnum': str(fortnum), 'imgid': args["input"], 'feature1': str(Tarea), 'feature2': str(Infarea), 'feature3': str(perimeter)}
+
+            with open(filename,'w') as File:
+                
+                writer = csv.DictWriter(File, fieldnames = fieldnames)
+
+                writer.writeheader()
+        
+                writer.writerow(L)
+                
+                file.close(File)
+            
+        finally:
+                        
+            import classifier
+            break
+
+            
+    elif n == ord('n' or 'N') :
+        print ('File not updated! \nSuccessfully terminated!')
+        break
+    
+    else:
+        print ('invalid input!')
+        break
