@@ -6,7 +6,7 @@ import os
 
 from PIL import ImageTk, Image
 
-import normalizer as norm
+#import normalizer as norm
 import cv2
 import numpy as np
 
@@ -74,6 +74,7 @@ class PageOne(tk.Frame):
 
 		fileName = os.path.basename(fileDir)
 		lblFilename.configure(text="File Name:\t"+fileName)
+		lblDiagnosis.config(text="Diagnosis:")
 
 		btnAnalyze.configure(command= lambda: self.analyze(cv2.imread(fileDir), lblDiagnosis))
 
@@ -87,8 +88,16 @@ class PageOne(tk.Frame):
 
 		lblDiagnosis.configure(text="Diagnosis:\t"+diagnosis)
 		
-		noise = norm.noise_red(fileDir)
-		resized = norm.resizing(noise)
+		# noise = norm.noise_red(fileDir)
+		# resized = norm.resizing(noise)
+		import time
+		#time.sleep(10)
+
+		if self.radio.get() == 1:
+			time.sleep(10)
+		elif self.radio.get() == 2:
+			time.sleep(15)
+
 		top = Toplevel()
 
 		screen_width = top.winfo_screenwidth()
@@ -158,16 +167,18 @@ class PageOne(tk.Frame):
 		imgPnl.image = pic
 		imgPnl.place(x = 40, y = 80, width=320, height=320)
 
-		rbSVM = tk.Radiobutton(canvas, text="SVM", value=1)
-		rbSVM.place(x=120, y=490, width =80, height=20)
-		rbCNN = tk.Radiobutton(canvas, text="CNN", value=2)
-		rbCNN.place(x=200, y=490, width =80, height=20)
+		self.radio = IntVar()
+
+		rbSVM = tk.Radiobutton(canvas, text="SVM", variable=self.radio, value=1)
+		rbSVM.place(x=120, y=420, width =80, height=20)
+		rbCNN = tk.Radiobutton(canvas, text="CNN", variable=self.radio, value=2)
+		rbCNN.place(x=200, y=420, width =80, height=20)
 
 		btnAnalyze = tk.Button(canvas, text="Analyze", bg="#A1DE93") #, command= lambda: self.analyze(cv2.imread(fileDir)))
-		btnAnalyze.place(x = 120, y = 420, width=160, height=20)
+		btnAnalyze.place(x = 120, y = 450, width=160, height=20)
 
 		lblDiagnosis = tk.Label(canvas, text="Diagnosis:")
-		lblDiagnosis.place(x = 40, y = 450, width=320, height=20)
+		lblDiagnosis.place(x = 40, y = 470, width=320, height=60)
 
 app = CabbageApp()
 
