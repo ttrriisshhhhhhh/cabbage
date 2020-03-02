@@ -93,10 +93,20 @@ class PageOne(tk.Frame):
 		import time
 		#time.sleep(10)
 
+		def svm():
+			os.system('python main.py')
+
+		def cnn():
+			pass
+
 		if self.radio.get() == 1:
-			time.sleep(10)
+			print("SVM")
+			svm()
+			#time.sleep(10)
 		elif self.radio.get() == 2:
-			time.sleep(15)
+			print("CNN")
+			cnn()
+			#time.sleep(15)
 
 		top = Toplevel()
 
